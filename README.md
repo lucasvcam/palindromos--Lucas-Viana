@@ -1,2 +1,2 @@
-# palindromos--Lucas-Viana-.
+# palindromos-Lucas-Viana.
 Caça Palíndromos
