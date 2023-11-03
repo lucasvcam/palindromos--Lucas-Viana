@@ -21,7 +21,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 
 	private List<Palindromo> palindromosEncontrados = new ArrayList<Palindromo>();
 
-	public Iterable<Palindromo> encontraPalindromos(String jsonMatrix) {
+	public List<Palindromo> encontraPalindromos(String jsonMatrix) {
 		JSONObject jsonObject = new JSONObject(jsonMatrix);
 		JSONArray matrizArray = jsonObject.getJSONArray("nome_da_matriz");
 		int numLinhas = matrizArray.length();
@@ -100,7 +100,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 		return true;
 	}
 
-	private Iterable<Palindromo> persistePalindromos(Iterable<Palindromo> palindromos) {
+	private List<Palindromo> persistePalindromos(List<Palindromo> palindromos) {
 		palindromos.forEach(palindromo -> {
 			palindromeRepository.save(palindromo);
 		});
@@ -108,7 +108,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 
 	}
 
-	public Iterable<Palindromo> listaTodosPalindromos() {
+	public List<Palindromo> listaTodosPalindromos() {
 		return palindromeRepository.findAll();
 	}
 
