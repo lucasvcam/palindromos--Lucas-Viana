@@ -6,7 +6,7 @@ import br.com.teste.palindromos.entity.Palindromo;
 
 public interface PalindromoService {
 	
-	public Iterable<Palindromo> encontraPalindromos(String jsonMatrix);
+	public Iterable<Palindromo> encontraPalindromos(String jsonMatriz);
 
     public Iterable<Palindromo> listaTodosPalindromos();
     

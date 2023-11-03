@@ -24,9 +24,12 @@ public class PalindromoController {
     private PalindromoServiceImpl palindromoService;
 
     @PostMapping
+    @Operation(description = "Caça Palindromos presentes na matiz e persiste na base")
+    @ApiResponse(responseCode = "200", description = "Retorna os Palindromos encontrados e persistidos")
+    @ApiResponse(responseCode = "400", description = "Não foi posivel presistir os Palindromos")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<Palindromo> encontraPalindromos(@RequestBody String matrix) {
-        return palindromoService.encontraPalindromos(matrix);
+    public List<Palindromo> encontraPalindromos(@RequestBody String matriz) {
+        return palindromoService.encontraPalindromos(matriz);
     }
 
     @GetMapping("/listaPalindromos")

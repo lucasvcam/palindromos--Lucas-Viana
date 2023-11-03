@@ -19,92 +19,146 @@ public class PalindromoServiceImpl implements PalindromoService {
 	@Autowired
 	private PalindromoRepository palindromeRepository;
 
-	private List<Palindromo> palindromosEncontrados = new ArrayList<Palindromo>();
+	public List<Palindromo> encontraPalindromos(String jsonMatriz) {
+	     
+	        try {
+	            JSONObject jsonObj = new JSONObject(jsonMatriz);
 
-	public List<Palindromo> encontraPalindromos(String jsonMatrix) {
-		JSONObject jsonObject = new JSONObject(jsonMatrix);
-		JSONArray matrizArray = jsonObject.getJSONArray("nome_da_matriz");
-		int numLinhas = matrizArray.length();
-		int numCols = numLinhas;
+	            if (!jsonObj.has("matriz")) {
+	                System.out.println("O JSON não contém a chave 'matriz'.");
+	                return null;
+	            }
 
-		if (numLinhas > 10 || numCols > 10) {
-			System.out.println("A matriz não pode ter mais de 10 linhas ou 10 colunas.");
-			return null;
-		}
+	            JSONArray matrizJson = jsonObj.getJSONArray("matriz");
+	            int numRows = matrizJson.length();
 
-		char[][] matriz = new char[numLinhas][numCols];
-		Palindromo palindromo = new Palindromo();
-		for (int i = 0; i < numLinhas; i++) {
-			for (int j = 0; j < numCols; j++) {
-				matriz[i][j] = matrizArray.getJSONArray(i).getString(j).charAt(0);
-			}
-		}
-		for (int linha = 0; linha < numLinhas; linha++) {
-			for (int coluna = 0; coluna < numCols; coluna++) {
-				// Horizontal
-				for (int len = 1; coluna + len <= numCols; len++) {
-					String palavraHorizontal = new String(matriz[linha], coluna, len);
-					if (ehPalindromo(palavraHorizontal)) {
-						palindromo.setPalavra(palavraHorizontal);
-						palindromosEncontrados.add(palindromo);
-					}
-				}
+	            if (numRows > 10) {
+	                System.out.println("O número de linhas excede o máximo de 10.");
+	                return null;
+	            }
 
-				// Vertical
-				for (int len = 1; linha + len <= numLinhas; len++) {
-					StringBuilder palavraVertical = new StringBuilder();
-					for (int i = 0; i < len; i++) {
-						palavraVertical.append(matriz[linha + i][coluna]);
-					}
-					if (ehPalindromo(palavraVertical.toString())) {
-						palindromo.setPalavra(palavraVertical.toString());
-						palindromosEncontrados.add(palindromo);
-					}
-				}
+	            char[][] matriz = new char[numRows][];
+	            int numCols = 0;
 
-				// Diagonal (cima-esquerda para baixo-direita)
-				for (int len = 1; linha + len <= numLinhas && coluna + len <= numCols; len++) {
-					StringBuilder palavraDiagonal = new StringBuilder();
-					for (int i = 0; i < len; i++) {
-						palavraDiagonal.append(matriz[linha + i][coluna + i]);
-					}
-					if (ehPalindromo(palavraDiagonal.toString())) {
-						palindromo.setPalavra(palavraDiagonal.toString());
-						palindromosEncontrados.add(palindromo);
-					}
-				}
+	            for (int i = 0; i < numRows; i++) {
+	                JSONArray row = matrizJson.getJSONArray(i);
+	                int currentCols = row.length();
+	                if (currentCols > 10) {
+	                    System.out.println("O número de colunas na linha " + i + " excede o máximo de 10.");
+	                    return null;
+	                }
+	                if (numCols == 0) {
+	                    numCols = currentCols;
+	                } else if (numCols != currentCols) {
+	                    System.out.println("A matriz não é quadrada. O número de colunas na linha " + i + " é diferente das linhas anteriores.");
+	                    return null;
+	                }
+	                matriz[i] = new char[currentCols];
+	                for (int j = 0; j < currentCols; j++) {
+	                    matriz[i][j] = row.getString(j).charAt(0);
+	                }
+	            }
+	            List<Palindromo> palindromosEncontrados = caçaPalindromosNaMatriz(matriz);
+	            return persistePalindromos(palindromosEncontrados);
+	        } catch (Exception e) {
+	            System.out.println("Erro ao analisar o JSON: " + e.getMessage());
+	            return null;
+	        }
+	    }
+	
+    public List<Palindromo> caçaPalindromosNaMatriz(char[][] matriz) {
+        int numLinhas = matriz.length;
+        int numCols = matriz[0].length;
+        List<Palindromo> palindromosEncontrados = new ArrayList<>();
+        Palindromo palindromo = new Palindromo();
 
-				// Diagonal (cima-direita para baixo-esquerda)
-				for (int len = 1; linha + len <= numLinhas && coluna - len + 1 >= 0; len++) {
-					StringBuilder palavraDiagonal = new StringBuilder();
-					for (int i = 0; i < len; i++) {
-						palavraDiagonal.append(matriz[linha + i][coluna - i]);
-					}
-					if (ehPalindromo(palavraDiagonal.toString())) {
-						palindromo.setPalavra(palavraDiagonal.toString());
-						palindromosEncontrados.add(palindromo);
-					}
-				}
-			}
-		}
-		return persistePalindromos(palindromosEncontrados);
-	}
+        for (int linha = 0; linha < numLinhas; linha++) {
+            for (int coluna = 0; coluna < numCols; coluna++) {
+                // Horizontal (esquerda para direita)
+                for (int len = 1; coluna + len <= numCols; len++) {
+                    String palavraHorizontal = new String(matriz[linha], coluna, len);
+                    if (ehPalindromo(palavraHorizontal)) {
+                    	palindromo.setPalavra(palavraHorizontal);
+                    	palindromosEncontrados.add(palindromo);
+                    }
+                }
 
-	private static boolean ehPalindromo(String palavra) {
-		int comprimento = palavra.length();
-		for (int i = 0; i < comprimento / 2; i++) {
-			if (palavra.charAt(i) != palavra.charAt(comprimento - i - 1)) {
-				return false;
-			}
-		}
-		return true;
-	}
+                // Horizontal (direita para esquerda)
+                for (int len = 1; coluna - len >= 0; len++) {
+                    StringBuilder palavraHorizontal = new StringBuilder();
+                    for (int i = 0; i < len; i++) {
+                        palavraHorizontal.append(matriz[linha][coluna - i]);
+                    }
+                    if (ehPalindromo(palavraHorizontal.toString())) {
+                    	palindromo.setPalavra(palavraHorizontal.toString());
+                    	palindromosEncontrados.add(palindromo);                    }
+                }
+
+                // Vertical (cima para baixo)
+                for (int len = 1; linha + len <= numLinhas; len++) {
+                    StringBuilder palavraVertical = new StringBuilder();
+                    for (int i = 0; i < len; i++) {
+                        palavraVertical.append(matriz[linha + i][coluna]);
+                    }
+                    if (ehPalindromo(palavraVertical.toString())) {
+                    	palindromo.setPalavra(palavraVertical.toString());
+                    	palindromosEncontrados.add(palindromo);                    }
+                }
+
+                // Vertical (baixo para cima)
+                for (int len = 1; linha - len >= 0; len++) {
+                    StringBuilder palavraVertical = new StringBuilder();
+                    for (int i = 0; i < len; i++) {
+                        palavraVertical.append(matriz[linha - i][coluna]);
+                    }
+                    if (ehPalindromo(palavraVertical.toString())) {
+                    	palindromo.setPalavra(palavraVertical.toString());
+                    	palindromosEncontrados.add(palindromo);                    }
+                }
+
+                // Diagonal (cima-esquerda para baixo-direita)
+                for (int len = 1; linha + len <= numLinhas && coluna + len <= numCols; len++) {
+                    StringBuilder palavraDiagonal = new StringBuilder();
+                    for (int i = 0; i < len; i++) {
+                        palavraDiagonal.append(matriz[linha + i][coluna + i]);
+                    }
+                    if (ehPalindromo(palavraDiagonal.toString())) {
+                    	palindromo.setPalavra(palavraDiagonal.toString());
+                    	palindromosEncontrados.add(palindromo);                    }
+                }
+
+                // Diagonal (cima-direita para baixo-esquerda)
+                for (int len = 1; linha + len <= numLinhas && coluna - len >= 0; len++) {
+                    StringBuilder palavraDiagonal = new StringBuilder();
+                    for (int i = 0; i < len; i++) {
+                        palavraDiagonal.append(matriz[linha + i][coluna - i]);
+                    }
+                    if (ehPalindromo(palavraDiagonal.toString())) {
+                    	palindromo.setPalavra(palavraDiagonal.toString());
+                    	palindromosEncontrados.add(palindromo);                    }
+                }
+            }
+        }
+        return palindromosEncontrados;
+    }
+	
+	
+    public static boolean ehPalindromo(String palavra) {
+        palavra = palavra.replaceAll("\\s", "").toLowerCase();
+        if (palavra.length() < 4) {
+            return false;
+        }
+        int comprimento = palavra.length();
+        for (int i = 0; i < comprimento / 2; i++) {
+            if (palavra.charAt(i) != palavra.charAt(comprimento - i - 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 	private List<Palindromo> persistePalindromos(List<Palindromo> palindromos) {
-		palindromos.forEach(palindromo -> {
-			palindromeRepository.save(palindromo);
-		});
-		return palindromos;
+			return palindromeRepository.saveAll(palindromos);
 
 	}
 
