@@ -29,15 +29,15 @@ public class PalindromoController {
     @ApiResponse(responseCode = "400", description = "Não foi posivel presistir os Palindromos")
     @ResponseStatus(HttpStatus.CREATED)
     public List<Palindromo> encontraPalindromos(@RequestBody String matriz) {
-        return palindromoService.encontraPalindromos(matriz);
+        return palindromoService.encontrarPalindromos(matriz);
     }
 
-    @GetMapping("/listaPalindromos")
+    @GetMapping
     @Operation(description = "Busca lista de Palindromos")
     @ApiResponse(responseCode = "200", description = "Retorna os Palindromos")
     @ApiResponse(responseCode = "400", description = "Não foi posivel recuperar a lista de Palindromos")
     @ResponseStatus(HttpStatus.OK)
     public List<Palindromo> listaTodosPalindromos() {
-        return palindromoService.listaTodosPalindromos();
+        return palindromoService.listarTodosPalindromos();
     }
 }

@@ -6,9 +6,9 @@ import br.com.teste.palindromos.entity.Palindromo;
 
 public interface PalindromoService {
 	
-	public Iterable<Palindromo> encontraPalindromos(String jsonMatriz);
+	public Iterable<Palindromo> encontrarPalindromos(String jsonMatriz);
 
-    public Iterable<Palindromo> listaTodosPalindromos();
+    public Iterable<Palindromo> listarTodosPalindromos();
     
     public Optional<Palindromo> buscarPorIdPalindromo(Long id);
     

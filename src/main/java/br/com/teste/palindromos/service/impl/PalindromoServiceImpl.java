@@ -21,15 +21,10 @@ public class PalindromoServiceImpl implements PalindromoService {
 
 	private static List<Palindromo> palindromosEncontrados = new ArrayList<>();
 
-	public List<Palindromo> encontraPalindromos(String jsonMatriz) {
+	public List<Palindromo> encontrarPalindromos(String jsonMatriz) {
 
 		try {
 			JSONObject jsonObj = new JSONObject(jsonMatriz);
-
-			if (!jsonObj.has("matriz")) {
-				System.out.println("O JSON não contém a chave 'matriz'.");
-				return null;
-			}
 
 			JSONArray matrizJson = jsonObj.getJSONArray("matriz");
 			int numRows = matrizJson.length();
@@ -61,16 +56,16 @@ public class PalindromoServiceImpl implements PalindromoService {
 					matriz[i][j] = row.getString(j).charAt(0);
 				}
 			}
-			caçaPalindromosNaMatriz(matriz);
+			cacaPalindromosNaMatriz(matriz);
 
-			return persistePalindromos(palindromosEncontrados);
+			return persistirPalindromos(palindromosEncontrados);
 		} catch (Exception e) {
 			System.out.println("Erro ao analisar o JSON: " + e.getMessage());
 			return null;
 		}
 	}
 
-	public List<Palindromo> caçaPalindromosNaMatriz(char[][] matriz) {
+	public List<Palindromo> cacaPalindromosNaMatriz(char[][] matriz) {
 		int numLinhas = matriz.length;
 		int numCols = matriz[0].length;
 		for (int linha = 0; linha < numLinhas; linha++) {
@@ -81,18 +76,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 					if (ehPalindromo(palavraHorizontal)) {
 						Palindromo palindromoEncontrado = new Palindromo();
 						palindromoEncontrado.setPalavra(palavraHorizontal);
-						inserePalindromoNaLista(palavraHorizontal);
-					}
-				}
-
-				// Horizontal (direita para esquerda)
-				for (int len = 1; coluna - len >= 0; len++) {
-					StringBuilder palavraHorizontal = new StringBuilder();
-					for (int i = 0; i < len; i++) {
-						palavraHorizontal.append(matriz[linha][coluna - i]);
-					}
-					if (ehPalindromo(palavraHorizontal.toString())) {
-						inserePalindromoNaLista(palavraHorizontal.toString());
+						inserirPalindromoNaLista(palavraHorizontal);
 					}
 				}
 
@@ -103,20 +87,10 @@ public class PalindromoServiceImpl implements PalindromoService {
 						palavraVertical.append(matriz[linha + i][coluna]);
 					}
 					if (ehPalindromo(palavraVertical.toString())) {
-						inserePalindromoNaLista(palavraVertical.toString());
+						inserirPalindromoNaLista(palavraVertical.toString());
 					}
 				}
 
-				// Vertical (baixo para cima)
-				for (int len = 1; linha - len >= 0; len++) {
-					StringBuilder palavraVertical = new StringBuilder();
-					for (int i = 0; i < len; i++) {
-						palavraVertical.append(matriz[linha - i][coluna]);
-					}
-					if (ehPalindromo(palavraVertical.toString())) {
-						inserePalindromoNaLista(palavraVertical.toString());
-					}
-				}
 
 				// Diagonal (cima-esquerda para baixo-direita)
 				for (int len = 1; linha + len <= numLinhas && coluna + len <= numCols; len++) {
@@ -125,7 +99,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 						palavraDiagonal.append(matriz[linha + i][coluna + i]);
 					}
 					if (ehPalindromo(palavraDiagonal.toString())) {
-						inserePalindromoNaLista(palavraDiagonal.toString());
+						inserirPalindromoNaLista(palavraDiagonal.toString());
 					}
 				}
 
@@ -136,7 +110,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 						palavraDiagonal.append(matriz[linha + i][coluna - i]);
 					}
 					if (ehPalindromo(palavraDiagonal.toString())) {
-						inserePalindromoNaLista(palavraDiagonal.toString());
+						inserirPalindromoNaLista(palavraDiagonal.toString());
 					}
 				}
 			}
@@ -144,7 +118,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 		return palindromosEncontrados;
 	}
 
-	public static void inserePalindromoNaLista(String palavra) {
+	public static void inserirPalindromoNaLista(String palavra) {
 		Palindromo palindromoEncontrado = new Palindromo();
 		palindromoEncontrado.setPalavra(palavra);
 		palindromosEncontrados.add(palindromoEncontrado);
@@ -164,12 +138,12 @@ public class PalindromoServiceImpl implements PalindromoService {
 		return true;
 	}
 
-	private List<Palindromo> persistePalindromos(List<Palindromo> palindromosEncontrados) {
+	private List<Palindromo> persistirPalindromos(List<Palindromo> palindromosEncontrados) {
 		return palindromeRepository.saveAll(palindromosEncontrados);
 
 	}
 
-	public List<Palindromo> listaTodosPalindromos() {
+	public List<Palindromo> listarTodosPalindromos() {
 		return palindromeRepository.findAll();
 	}
 
