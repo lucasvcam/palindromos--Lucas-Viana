@@ -58,7 +58,7 @@ public class PalindromoServiceImpl implements PalindromoService {
 	                    matriz[i][j] = row.getString(j).charAt(0);
 	                }
 	            }
-	            List<Palindromo> palindromosEncontrados = caçaPalindromosNaMatriz(matriz);
+	            List<String> palindromosEncontrados = caçaPalindromosNaMatriz(matriz);
 	            return persistePalindromos(palindromosEncontrados);
 	        } catch (Exception e) {
 	            System.out.println("Erro ao analisar o JSON: " + e.getMessage());
@@ -66,11 +66,11 @@ public class PalindromoServiceImpl implements PalindromoService {
 	        }
 	    }
 	
-    public List<Palindromo> caçaPalindromosNaMatriz(char[][] matriz) {
+    public List<String> caçaPalindromosNaMatriz(char[][] matriz) {
         int numLinhas = matriz.length;
         int numCols = matriz[0].length;
-        List<Palindromo> palindromosEncontrados = new ArrayList<>();
-        Palindromo palindromo = new Palindromo();
+        List<String> palindromosEncontrados = new ArrayList<>();
+//        Palindromo palindromo = new Palindromo();
 
         for (int linha = 0; linha < numLinhas; linha++) {
             for (int coluna = 0; coluna < numCols; coluna++) {
@@ -78,8 +78,7 @@ public class PalindromoServiceImpl implements PalindromoService {
                 for (int len = 1; coluna + len <= numCols; len++) {
                     String palavraHorizontal = new String(matriz[linha], coluna, len);
                     if (ehPalindromo(palavraHorizontal)) {
-                    	palindromo.setPalavra(palavraHorizontal);
-                    	palindromosEncontrados.add(palindromo);
+                    	palindromosEncontrados.add(palavraHorizontal);
                     }
                 }
 
@@ -90,8 +89,7 @@ public class PalindromoServiceImpl implements PalindromoService {
                         palavraHorizontal.append(matriz[linha][coluna - i]);
                     }
                     if (ehPalindromo(palavraHorizontal.toString())) {
-                    	palindromo.setPalavra(palavraHorizontal.toString());
-                    	palindromosEncontrados.add(palindromo);                    }
+                    	palindromosEncontrados.add(palavraHorizontal.toString());                    }
                 }
 
                 // Vertical (cima para baixo)
@@ -101,8 +99,7 @@ public class PalindromoServiceImpl implements PalindromoService {
                         palavraVertical.append(matriz[linha + i][coluna]);
                     }
                     if (ehPalindromo(palavraVertical.toString())) {
-                    	palindromo.setPalavra(palavraVertical.toString());
-                    	palindromosEncontrados.add(palindromo);                    }
+                    	palindromosEncontrados.add(palavraVertical.toString());                    }
                 }
 
                 // Vertical (baixo para cima)
@@ -112,8 +109,7 @@ public class PalindromoServiceImpl implements PalindromoService {
                         palavraVertical.append(matriz[linha - i][coluna]);
                     }
                     if (ehPalindromo(palavraVertical.toString())) {
-                    	palindromo.setPalavra(palavraVertical.toString());
-                    	palindromosEncontrados.add(palindromo);                    }
+                    	palindromosEncontrados.add(palavraVertical.toString());                    }
                 }
 
                 // Diagonal (cima-esquerda para baixo-direita)
@@ -123,8 +119,7 @@ public class PalindromoServiceImpl implements PalindromoService {
                         palavraDiagonal.append(matriz[linha + i][coluna + i]);
                     }
                     if (ehPalindromo(palavraDiagonal.toString())) {
-                    	palindromo.setPalavra(palavraDiagonal.toString());
-                    	palindromosEncontrados.add(palindromo);                    }
+                    	palindromosEncontrados.add(palavraDiagonal.toString());                    }
                 }
 
                 // Diagonal (cima-direita para baixo-esquerda)
@@ -134,8 +129,7 @@ public class PalindromoServiceImpl implements PalindromoService {
                         palavraDiagonal.append(matriz[linha + i][coluna - i]);
                     }
                     if (ehPalindromo(palavraDiagonal.toString())) {
-                    	palindromo.setPalavra(palavraDiagonal.toString());
-                    	palindromosEncontrados.add(palindromo);                    }
+                    	palindromosEncontrados.add(palavraDiagonal.toString());                    }
                 }
             }
         }
@@ -157,8 +151,9 @@ public class PalindromoServiceImpl implements PalindromoService {
         return true;
     }
 
-	private List<Palindromo> persistePalindromos(List<Palindromo> palindromos) {
-			return palindromeRepository.saveAll(palindromos);
+	private List<Palindromo> persistePalindromos(List<String> palindromos) {
+//		return palindromeRepository.saveAll(palindromos);
+		return null;
 
 	}
 
